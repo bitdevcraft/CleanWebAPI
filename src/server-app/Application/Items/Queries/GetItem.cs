@@ -1,18 +1,19 @@
 using Application.Common.Core;
 using Application.Common.Interfaces;
 using Domain.Entities;
+using ErrorOr;
 using MediatR;
 
 namespace Application.Items.Queries;
 
 public class GetItem
 {
-    public class Query : IRequest<Result<Item>>
+    public class Query : IRequest<ErrorOr<Item>>
     {
         public int Id { get; set; }
     }
 
-    public class Handler : IRequestHandler<Query, Result<Item>>
+    public class Handler : IRequestHandler<Query, ErrorOr<Item>>
     {
         private readonly IApplicationDbContext _context;
 
@@ -21,14 +22,14 @@ public class GetItem
             _context = context;
         }
 
-        public async Task<Result<Item>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Item>> Handle(Query request, CancellationToken cancellationToken)
         {
             var result = await _context.Items.FindAsync(request.Id, cancellationToken);
 
             if (result == null)
-                return null;
+                return Error.NotFound();
 
-            return Result<Item>.Success(result);
+            return result;
         }
     }
 }

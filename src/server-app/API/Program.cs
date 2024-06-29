@@ -1,6 +1,7 @@
 using API;
 using Application;
 using Infrastructure;
+using Domain.Identity;
 using Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +20,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    await app.InitialiseDatabaseAsync();
 }
 
-await app.InitialiseDatabaseAsync();
 
 app.UseInfrastructure();
+
 
 app.UseHttpsRedirection();
 
