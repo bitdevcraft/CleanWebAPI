@@ -1,3 +1,4 @@
+using Application.Common.Core;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
@@ -7,9 +8,9 @@ namespace Application.Items.Queries;
 
 public class ListItems
 {
-    public class Query : IRequest<List<Item>> { }
+    public class Query : IRequest<Result<List<Item>>> { }
 
-    public class Handler : IRequestHandler<Query, List<Item>>
+    public class Handler : IRequestHandler<Query, Result<List<Item>>>
     {
         private readonly IApplicationDbContext _context;
 
@@ -18,9 +19,14 @@ public class ListItems
             _context = context;
         }
 
-        public async Task<List<Item>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<List<Item>>> Handle(
+            Query request,
+            CancellationToken cancellationToken
+        )
         {
-            return await _context.Items.ToListAsync(cancellationToken);
+            var result = await _context.Items.ToListAsync(cancellationToken);
+
+            return Result<List<Item>>.Success(result);
         }
     }
 }
