@@ -3,6 +3,7 @@ using Domain.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Security.TokenGenerator;
 using Infrastructure.Security.TokenValidation;
+using Infrastructure.Security.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -59,8 +60,11 @@ public static class DependencyInjection
         services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddSignInManager<SignInManager<ApplicationUser>>();
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+        // .AddSignInManager<SignInManager<ApplicationUser>>();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserAccessor, UserAccessor>();
         return services;
     }
 }

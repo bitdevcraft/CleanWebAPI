@@ -1,11 +1,18 @@
 using API;
 using Application;
-using Infrastructure;
 using Domain.Identity;
+using Infrastructure;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers(opt =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
 
 {
     builder
@@ -23,9 +30,10 @@ if (app.Environment.IsDevelopment())
     await app.InitialiseDatabaseAsync();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseInfrastructure();
-
 
 app.UseHttpsRedirection();
 
