@@ -1,6 +1,8 @@
 using Application.Common.Interfaces;
 using Domain.Identity;
 using Infrastructure.Persistence;
+using Infrastructure.Security;
+using Infrastructure.Security.PolicyEnforcer;
 using Infrastructure.Security.TokenGenerator;
 using Infrastructure.Security.TokenValidation;
 using Infrastructure.Security.User;
@@ -20,6 +22,7 @@ public static class DependencyInjection
     )
     {
         services.AddPersistence(configuration);
+        services.AddAuthenticationService(configuration);
         services.AddIdentityService(configuration);
         return services;
     }
@@ -43,12 +46,16 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddIdentityService(
+    private static IServiceCollection AddAuthenticationService(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
         services.AddAuthorization();
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+        services.AddSingleton<IPolicyEnforcer, PolicyEnforcer>();
+
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
@@ -57,6 +64,14 @@ public static class DependencyInjection
             .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
 
+        return services;
+    }
+
+    private static IServiceCollection AddIdentityService(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
         services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()

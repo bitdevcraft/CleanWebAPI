@@ -37,7 +37,6 @@ public class UserRefreshToken
             CancellationToken cancellationToken
         )
         {
-                
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.WriteLine(_userAccessor.GetUsername());
             Console.ResetColor();
@@ -57,10 +56,12 @@ public class UserRefreshToken
             if (oldToken != null)
                 oldToken.Revoked = DateTime.UtcNow;
 
+            var roles = await _userManager.GetRolesAsync(user);
+
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _jwtTokenGenerator.GenerateToken(user)
+                Token = _jwtTokenGenerator.GenerateToken(user, roles)
             };
         }
     }

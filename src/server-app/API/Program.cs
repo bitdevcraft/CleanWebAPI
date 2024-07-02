@@ -14,6 +14,7 @@ builder.Services.AddControllers(opt =>
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
 
+
 {
     builder
         .Services.AddPresentation()
@@ -31,7 +32,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseInfrastructure();
 

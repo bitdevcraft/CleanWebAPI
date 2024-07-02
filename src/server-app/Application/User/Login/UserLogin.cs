@@ -18,6 +18,7 @@ public class UserLogin
     public class Handler : IRequestHandler<Command, ErrorOr<UserDto>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
         public Handler(
@@ -26,6 +27,7 @@ public class UserLogin
         )
         {
             _userManager = userManager;
+
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
@@ -40,8 +42,9 @@ public class UserLogin
                 return Error.Unauthorized();
 
             await _userManager.CheckPasswordAsync(user, request.Password);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            var accessToken = _jwtTokenGenerator.GenerateToken(user);
+            var accessToken = _jwtTokenGenerator.GenerateToken(user, roles);
             var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
             user.RefreshTokens.Add(new RefreshToken { Token = refreshToken });

@@ -1,4 +1,5 @@
 using System.Reflection;
+using Application.Common.Behavior;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -10,6 +11,8 @@ public static class DependencyInjection
         services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+
+            options.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
         });
 
         services.AddAutoMapper(Assembly.GetExecutingAssembly());

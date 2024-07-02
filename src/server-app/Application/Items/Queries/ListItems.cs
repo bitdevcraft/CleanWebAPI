@@ -1,5 +1,7 @@
 using Application.Common.Core;
 using Application.Common.Interfaces;
+using Application.Common.Security.Policies;
+using Application.Common.Security.Request;
 using Domain.Entities;
 using ErrorOr;
 using MediatR;
@@ -9,7 +11,8 @@ namespace Application.Items.Queries;
 
 public class ListItems
 {
-    public class Query : IRequest<ErrorOr<List<Item>>> { }
+    [Authorize(Policies = Policy.SystemAdministrator)]
+    public class Query : IAuthorizeableRequest<ErrorOr<List<Item>>> { }
 
     public class Handler : IRequestHandler<Query, ErrorOr<List<Item>>>
     {
